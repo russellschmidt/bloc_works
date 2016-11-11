@@ -1,4 +1,4 @@
-require "bloc_works/version"
+require_relative "bloc_works/version"
 
 module BlocWorks
   class Application
