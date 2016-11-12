@@ -1,0 +1,16 @@
+Question 1, Checkpoint 1, Architecture
+
+** Active Model **
+Active Model is a library provides tools for making working with models and features in Active Record even easier. These tools include things like built-in methods such as #dirty? for checking if an object has had a change to an attribute that has not been saved to the database yet. There are a number of methods you can apply for simple naming and pluralization, prefixes and suffixes for attributes, serialization and validating objects.
+
+** Active Record **
+Active Record provides Rails with classes and objects for representing and manipulating a database associated with the project. Active Record is itself a type of ORM (Object Relational Mapping) technique that provides objects that serve as representations of the data in a database. In addition to representing the data in a project's table or tables, Active Record also provides associations between databases, data validation before writing to the database, callbacks to execute methods on database interaction events, and a set of tools for executing database operations such as CRUD (Create, Read, Update, Delete) in Ruby instead of SQL.
+
+** Active Support **
+Active Support provides extensions to the core Ruby language that makes writing code for Rails a bit easier. Some of my favorite methods provided by Active Support are #blank? and #present? These methods fill in a gap in the standard Ruby library that has #nil? and #empty? but nothing for a non-nil value with a length/count greater than 0. Another great method is #try which will call a method on an object only if that object is not nil. Otherwise, method calls will need to be couched in a conditional to check if the underlying object even exists. There are also a ton of methods to be called on data types such as string and numbers to help automate things like pluralization, date and time handling, and otherwise format numbers and language.
+
+** Action Pack **
+Just as Active Record provides the model in the MVC framework, so does Action Pack provide the V (view) and C (controller). Action Pack is a framework for responding to web requests, including routing (where URLs are mapped to actions), controllers (to implement these actions), and views, which are the responses to these actions/requests. There are two important modules in Action Pack: Action Dispatch handles the routing and details of the HTTP request, and Action Controller, which provides the base controller class which is subclassed for all the controllers in Rails.
+
+** Action Mailer **
+In short, Action Mailer provides a set of classes and views for the purpose of sending email with your Rails application. Action Mailer is based around the concept of a Mailer, which is itself based on how controllers work in Rails. Mailers have methods called actions and use views to structure content. Unlike controllers, the content is not formatted using HTML but is instead formatted for the purpose of emailing. Of course, email can be sent as HTML so the distinctions are not as radical as they might seem until you see the text-based view which is a departure from a traditional view. There is support for all of the common eamil features such as emailing multipling addresses at once, sending attachments, etc. as well as callbacks based on email events. 
