@@ -10,9 +10,10 @@ class BlocWorksTest < Test::Unit::TestCase
 		BlocWorks::Application.new
 	end
 
-	def test_root
+	def test_call
 		get '/'
 		assert last_response.ok?
+		assert_equal "<DOCTYPE html><html><head></head><body><h1 style='text-align:center;'>Hello Blocheads!</h1><div><img src='https://goo.gl/7mbPVM' alt='bully bulldog'></div></body></html>", last_response.body
 	end
 
 end
