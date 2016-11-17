@@ -6,7 +6,7 @@ module BlocWorks
 			@env = env
 		end
 
-		def render(views, locals = {})
+		def render(view, locals = {})
 			filename = File.join("app", "views", controller_dir, "#{view}.html.erb")
 			template = File.read(filename)
 			eruby = Erubis::Eruby.new(template)
