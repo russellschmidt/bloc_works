@@ -18,5 +18,12 @@ module BlocWorks
 			klass.slice!("Controller")
 			BlocWorks.snake_case(klass)
 		end
+
+		def redirect(location)
+			# here because BooksController inherits from BlocWorks::Controller
+			# do I need to link this to :call in bloc_works.rb
+			[302, {'Location' => location.to_s, 'Content-Type' => 'text/html'}, ['Redirecting']]
+			self.render location.to_sym
+		end
 	end
 end

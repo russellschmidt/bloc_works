@@ -7,13 +7,9 @@ module BlocWorks
 			# not just the string 'ExampleController'
 			
 			_, controller, action, _ = env["PATH_INFO"].split("/", 4)
-			
 			controller = controller.capitalize
-			
 			controller = "#{controller}Controller"	
-			
 			someVar = Object.const_get(controller)
-			
 			[someVar, action]
 		end
 
@@ -22,5 +18,6 @@ module BlocWorks
 				return [404, {'Content-Type' => 'text/html'}, ['404 Not Found']]
 			end
 		end
+
 	end
 end
