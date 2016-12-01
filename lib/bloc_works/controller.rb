@@ -10,6 +10,12 @@ module BlocWorks
 			filename = File.join("app", "views", controller_dir, "#{view}.html.erb")
 			template = File.read(filename)
 			eruby = Erubis::Eruby.new(template)
+			# get the instance variables of the controller with #instance_variables
+			# this returns an array of instance_variables
+			# iterate, use #instance_variable_get to get values & add to {locals}
+			self.instance_variables.each do |var|
+				locals[var] = self.instance_variable_get(var)
+			end
 			eruby.result(locals.merge(env: @env))
 		end
 
