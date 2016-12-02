@@ -10,6 +10,10 @@ module BlocWorks
 			@request ||= Rack::Request.new(@env)
 		end
 
+		def params
+			request.params
+		end
+
 		def render(view, locals = {})
 			filename = File.join("app", "views", controller_dir, "#{view}.html.erb")
 			template = File.read(filename)
