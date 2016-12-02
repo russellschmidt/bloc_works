@@ -14,7 +14,17 @@ module BlocWorks
 			request.params
 		end
 
-		def render(view, locals = {})
+		def response(text, status=200, headers={})
+			raise "Cannot respond multiple times" unless @response.nil?
+			# flatten assures that any text sent over is in a 1-D array
+			@response = Rack::Response.new([text].flatten, status, headers)
+		end
+
+		def render(*args)
+			response(create_response_array(*args))
+		end
+
+		def create_response_array(view, locals = {})
 			filename = File.join("app", "views", controller_dir, "#{view}.html.erb")
 			template = File.read(filename)
 			eruby = Erubis::Eruby.new(template)
@@ -25,6 +35,14 @@ module BlocWorks
 				locals[var] = self.instance_variable_get(var)
 			end
 			eruby.result(locals.merge(env: @env))
+		end
+
+		def get_response
+			@response
+		end
+
+		def has_response?
+			!@response.nil?
 		end
 
 		def controller_dir

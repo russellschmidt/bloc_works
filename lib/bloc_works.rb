@@ -7,16 +7,18 @@ require_relative "bloc_works/router"
 module BlocWorks
   class Application
   	def call(env)
-  		response = self.fav_icon(env)
-  		
-  		if response
-  			return response
-  		else
-  			cont_array = self.controller_and_action(env)
-  			cont = cont_array.first.new(env)
-  			action_call = cont.send(cont_array.last)
-  			return [200, {'Content-Type' => 'text/html'}, [action_call]]
-  		end
+  		response = self.fav_icon(env)  		
+
+			controller_array = self.controller_and_action(env)
+			controller = controller_array.first.new(env)
+			content = controller.send(controller_array.last)
+
+      if controller.has_response?
+        status, header, response = controller.get_response
+        [status, header, [response.body].flatten]
+      else
+        [200, {'Content-Type' => 'text/html'}, [content]]
+      end
   	end
   end
 end
