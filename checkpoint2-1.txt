@@ -1,0 +1,13 @@
+Checkpoint 2, Question 1
+
+The routing we are providing in bloc_works is based entirely upon a near-exact match of the request URI with the controller and action. In the current working example, we are converting `/books/welcome` (in any variant of upper or lower case) to `BooksController.welcome` in our routing to an action in our application. We will return a specific view with a status of 200 to the browser.
+
+We also have a second routing rule established, where favicon requests (i.e. where the requested URI is `/favicon.ico`) return a 404 error to the browser.
+
+All other requests are in fact not handled at all.
+
+Rails routing, on the other hand, is just a bit more sophisticated. URIs are matched to routes using extensive lookup tables with methodologies I do not quite fathom yet. Routes themselves can be created with the method `:resources` that automatically creates routes corresponding to CRUD actions and URIs based upon the passed in argument, which is then tied to a controller of that name plus `Controller` appended on. You can nest resources within the `routes.rb` file to automatically create multi-layered actions able to respond to URIs like `/controllerA/11/controllerB/4/someAction' appropriately.
+
+Accomodations are also made for anchored URIs which is a URI with an in-page `#someAnchor` included at the end, which our routing does not address at all. Similarly, custom routes that do not follow general Rails convention are recognized and accounted for as well. 
+
+Most importantly, unrecognized routes are passed to the application which can then provide more dynamic actions based on the http status code.
