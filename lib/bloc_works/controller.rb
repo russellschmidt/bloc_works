@@ -4,6 +4,24 @@ module BlocWorks
 	class Controller
 		def initialize(env)
 			@env = env
+			@routing_params = {}
+		end
+
+		def dispatch(action, routing_params = {})
+			@routing_params = routing_params
+			# copies view to 'text'
+			text = self.send(action)
+			if has_response?
+				rack_response = get_response
+				[rack_response.status, rack_response.header, [rack_response.body].flatten]
+			else
+				[200, {'Content-Type' => 'text/html'}, [text].flatten]
+			end
+		end
+
+		# Create a new rack object and then call the appropriate controller action
+		def self.action(action, response = {})
+			proc { |env| self.new(env).dispatch(action, response)}
 		end
 
 		def request
@@ -11,7 +29,7 @@ module BlocWorks
 		end
 
 		def params
-			request.params
+			request.params.merge(@routing_params)
 		end
 
 		def response(text, status=200, headers={})
