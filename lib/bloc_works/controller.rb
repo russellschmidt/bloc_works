@@ -8,6 +8,7 @@ module BlocWorks
 		end
 
 		def dispatch(action, routing_params = {})
+			binding.pry
 			@routing_params = routing_params
 			# copies view to 'text'
 			text = self.send(action)
@@ -69,11 +70,17 @@ module BlocWorks
 			BlocWorks.snake_case(klass)
 		end
 
-		def redirect(location)
-			# here because BooksController inherits from BlocWorks::Controller
-			# do I need to link this to :call in bloc_works.rb
-			[302, {'Location' => location.to_s, 'Content-Type' => 'text/html'}, ['Redirecting']]
-			self.render location.to_sym
+		def redirect_to(target, status=302, routing_params={})
+			# support all three Rails redirect_to main types
+			# 1. abs URL 2. action 3. relative links
+			if target.match(/^[http:]+\/\//) || target.match(/^[https:]+\/\//)
+				response([], status, target)
+			elsif routing_params.match(/#{target}/)
+				dispatch(target, routing_params)
+			else
+				[status, {'Location' => target.to_s, 'Content-Type' => 'text/html'},[]]
+			end
 		end
+
 	end
 end
