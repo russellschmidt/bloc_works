@@ -42,37 +42,57 @@ module BlocWorks
 		end
 
 		def map(url, *args)
-			options = {}
-			options = args.pop if args[-1].is_a?(Hash)
+			@vars, @regex_parts = [], []
+
+			options = map_options(args)
+			destination = map_destination(args)
+			regex, vars = map_parts(url)
+
+			@rules.push({ regex: Regexp.new("^/#{regex}$"),
+										vars: @vars,
+										destination: destination,
+										options: options })
+		end
+
+		def map_options(*args)
+			if args[-1].is_a?(Hash)
+				options = args.pop 
+			else
+				options = {}
+			end
 			options[:default] ||= {}
+			options
+		end
 
-			destination = nil
-			destination = args.pop if args.size > 0
-			raise 'Too many args' if args.size > 0
+		def map_destination(*args)
+			if args.size == 0
+				destination = nil
+			else 
+				destination = args.pop
+				if args.size > 0
+					raise 'Too many args. Arrrgh'
+				end
+			end
+			destination
+		end
 
-			parts = url.split("/")
-			parts.reject! { |part| part.empty? }
-
-			vars, regex_parts = [], []
-
+		def map_parts(url)
+			# returns two variables: cleaned up url & vars
+			regex_parts, vars = [], []
+			parts = url.split.delete_if {|p| p.empty?}
 			parts.each do |part|
-				case part[0]
-				when ":"
+				if part[0] == ":"
 					vars << part[1..-1]
 					regex_parts << "([a-zA-Z0-9]+)"
-				when "*"
+				elsif part[0] == "*"
 					vars << part[1..-1]
 					regex_parts << "(.*)"
 				else
-					regex_parts << part
+					vars << part
 				end
 			end
 
-			regex = regex_parts.join("/")
-			@rules.push({ regex: Regexp.new("^/#{regex}$"),
-										vars: vars,
-										destination: destination,
-										options: options })
+			return regex_parts.join("/"), vars
 		end
 
 		def look_up_url(url)
