@@ -93,20 +93,28 @@ module BlocWorks
 
 				if rule_match
 					options = rule[:options]
-					params = options[:default].dup
+					params = set_params(options, rule_match, rule)					
 
-					rule[:vars].each_with_index do |var, index|
-						params[var] = rule_match.captures[index]
-					end
-
-					if rule[:destination]
-						return get_destination(rule[:destination], params)
-					else
-						controller = params["controller"]
-						action = params["action"]
-						return get_destination("#{controller}##{action}", params)
-					end
+					return set_destination(rule, params)
 				end
+			end
+		end
+
+		def set_params(options, rule_match, rule)
+			params = options[:default].dup
+
+			rule[:vars].each_with_index do |var, index|
+				params[var] = rule_match.captures[index]
+			end
+
+			params
+		end
+
+		def set_destination(rule, params)
+			if rule[:destination]
+				return get_destination(rule[:destination], params)
+			else
+				return get_destination("#{params["controller"]}##{params["action"]}", params)
 			end
 		end
 
