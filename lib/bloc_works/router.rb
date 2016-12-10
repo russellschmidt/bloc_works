@@ -42,44 +42,36 @@ module BlocWorks
 		end
 
 		def map(url, *args)
-			@vars, @regex_parts = [], []
-
-			options = map_options(args)
-			destination = map_destination(args)
+			options, destination = map_options(*args)
 			regex, vars = map_parts(url)
 
 			@rules.push({ regex: Regexp.new("^/#{regex}$"),
-										vars: @vars,
+										vars: vars,
 										destination: destination,
 										options: options })
 		end
 
 		def map_options(*args)
-			if args[-1].is_a?(Hash)
-				options = args.pop 
-			else
-				options = {}
+			options, destination = {}, nil
+			if args[-1].is_a? Hash
+				options = args.pop
 			end
 			options[:default] ||= {}
-			options
-		end
 
-		def map_destination(*args)
-			if args.size == 0
-				destination = nil
-			else 
+			if args.size > 0
 				destination = args.pop
 				if args.size > 0
-					raise 'Too many args. Arrrgh'
+					raise 'Too many args'
 				end
 			end
-			destination
+
+			return options, destination
 		end
 
 		def map_parts(url)
-			# returns two variables: cleaned up url & vars
 			regex_parts, vars = [], []
-			parts = url.split.delete_if {|p| p.empty?}
+			parts = url.split("/").delete_if { |part| part.empty? } 
+
 			parts.each do |part|
 				if part[0] == ":"
 					vars << part[1..-1]
@@ -88,7 +80,7 @@ module BlocWorks
 					vars << part[1..-1]
 					regex_parts << "(.*)"
 				else
-					vars << part
+					regex_parts << part
 				end
 			end
 
