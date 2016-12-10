@@ -8,7 +8,6 @@ module BlocWorks
 		end
 
 		def dispatch(action, routing_params = {})
-			binding.pry
 			@routing_params = routing_params
 			# copies view to 'text'
 			text = self.send(action)
@@ -40,7 +39,34 @@ module BlocWorks
 		end
 
 		def render(*args)
-			response(create_response_array(*args))
+			# auto render views that have matching name to controller action
+			# check that the action is a controller action
+			# then check if there is a view that matches, and if so, render
+			# otherwise we use our standard rendering
+
+			if action_match?(args) && view_match?
+				render_matched_view(args)
+			else
+				response(create_response_array(*args))
+			end
+		end
+
+		def action_match?(*args)
+			self.class.instance_methods(false).include? args[0]
+		end
+
+		def view_match?(*args)
+			@filename = File.join("app", "views", controller_dir, "#{args[0]}.html.erb")
+			File.file?(@filename)
+		end
+
+		def render_matched_view(*args)
+			template = File.read(@filename)
+			eruby = Erubis::Eruby.new(template)	
+			self.instance_variables.each do |var|
+				locals[var] = self.instance_variable_get(var)
+			end
+			eruby.result(locals.merge(env: @env))		
 		end
 
 		def create_response_array(view, locals = {})
