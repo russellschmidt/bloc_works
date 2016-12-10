@@ -17,17 +17,23 @@ class BlocWorksTest < Test::Unit::TestCase
 
 	def test_books
 		get '/books'
-		asset_equal "http://localhost:3000/books", last_request.url
+		assert_equal "http://localhost:3000/books", last_request.url
 		assert last_response.ok?
+		assert last_response.body.include?('BlocBooks Below!')
 	end
 
-	def test_map
-		get '/books'
+	def test_welcome
+		get '/'
+		assert_equal "http://localhost:3000", last_request.url
+		assert last_response.ok?
 		assert last_response.body.include?('Welcome to BlocBooks!')
 	end
 
-	def test_look_up
-		get '/books'
+	def test_show_1
+		get '/books/1'
+		asset_equal "http://localhost:3000/books/1", last_request.url
+		assert last_response.ok?
+		assert last_response.body.include?('The Well-Grounded Rubyist')
 	end
 
 end
