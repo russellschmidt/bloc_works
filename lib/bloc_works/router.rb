@@ -87,6 +87,15 @@ module BlocWorks
 			return regex_parts.join("/"), vars
 		end
 
+		def resources(controller)
+			# this is our handy dandy resourceful route-maker method
+			# create CRUD for controller
+			# do we just create an array of new actions and then iterate on them
+			# => calling map on each action
+			# => making sure we are using the correct HTTP verb (where to pass in?)
+
+		end
+
 		def look_up_url(url)
 			@rules.each do |rule|
 				rule_match = rule[:regex].match(url)
