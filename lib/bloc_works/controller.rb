@@ -39,35 +39,20 @@ module BlocWorks
 		end
 
 		def render(*args)
-			# auto render views that have matching name to controller action
-			# check that the action is a controller action
-			# then check if there is a view that matches, and if so, render
-			# otherwise we use our standard rendering
-
-			# if action_match?(args[0]) && view_match?(args[0])
-			# 	render_matched_view(args)
-			# else
-			response(create_response_array(*args))
-			# end
+			# if render passed without an action, default to rendering view matching action name
+			# else render passed in view name
+			
+			if args[0].nil? || args[0].is_a?(Hash)
+				calling_method = caller[0][/`.*'/][1..-2]
+				args.insert(0, calling_method)
+				response(create_response_array(*args))
+			else
+				response(create_response_array(*args))
+			end
 		end
 
 		def action_match?(action)
 			self.class.instance_methods(false).include? action
-		end
-
-		def view_match?(action)
-			@filename = File.join("app", "views", controller_dir, "#{action}.html.erb")
-			File.file?(@filename)
-		end
-
-		def render_matched_view(*args)
-			template = File.read(@filename)
-			eruby = Erubis::Eruby.new(template)
-			locals = args[1].nil? ? {} : args[1]
-			self.instance_variables.each do |var|
-				locals[var] = self.instance_variable_get(var)
-			end
-			eruby.result(locals.merge(env: @env))		
 		end
 
 		def create_response_array(view, locals = {})
@@ -108,7 +93,6 @@ module BlocWorks
 					# => change routing_params to the controller, action
 					# => call dispatch with action, new routing_params
 					controller, action = target.split('_')
-					
 					routing_params = {"action" => action.to_s, "controller" => controller.to_s}
 					dispatch(action.to_sym, routing_params)
 				elsif !routing_params[target].nil?
