@@ -83,27 +83,24 @@ module BlocWorks
 		end
 
 		def redirect_to(target, status="302", routing_params={})
-			# Rails supports redirect to:
-			# 1. abs URL 2. action different controller 3. action same controller 4. relative links
 			if status == "302"
-				if target.match(/^[http:]+\/\//) || target.match(/^[https:]+\/\//)
-					return [status, {'Location' => target.to_s, 'Content-Type' => 'text/html'},[]]
-				elsif target.match(/_/)
-					# if redirect target in rails format: controller_action
-					# => change routing_params to the controller, action
-					# => call dispatch with action, new routing_params
-					controller, action = target.split('_')
-					routing_params = {"action" => action.to_s, "controller" => controller.to_s}
-					dispatch(action.to_sym, routing_params)
-				elsif !routing_params[target].nil?
+				if self.respond_to? target
+					routing_params['controller'] = self.class.to_s.split('Controller')[0].downcase
+					routing_params['action'] = target.to_s 
 					dispatch(target, routing_params)
+				elsif target =~ /^([^#]+)#([^#]+)$/
+					controller = $1
+					action = $2
+					routing_params = {"action" => action, "controller" => controller}
+					name = controller.capitalize
+					controllerName = Object.const_get("#{name}Controller")
+					controllerName.dispatch(action, routing_params)
 				else
-					return [status, {'Location' => target.to_s, 'Content-Type' => 'text/html'},[]]
+					puts [target]
 				end
 			else
-				"Incorrect status code supplied for redirect"
+				puts "Incorrect status code supplied for redirect"
 			end
 		end
-
 	end
 end
