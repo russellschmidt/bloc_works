@@ -96,7 +96,7 @@ module BlocWorks
 					controllerName = Object.const_get("#{name}Controller")
 					controllerName.dispatch(action, routing_params)
 				else
-					puts [target]
+					return [status, {'Content-Type'=>'text/html'}, ['pornotime']]
 				end
 			else
 				puts "Incorrect status code supplied for redirect"
