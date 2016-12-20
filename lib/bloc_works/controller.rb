@@ -12,6 +12,9 @@ module BlocWorks
 			# copies view to 'text'
 			text = self.send(action)
 			if has_response?
+				# set http verb
+				@env["REQUEST_METHOD"] = routing_params["request_method"]
+				
 				rack_response = get_response
 				[rack_response.status, rack_response.header, [rack_response.body].flatten]
 			else
@@ -96,7 +99,7 @@ module BlocWorks
 					controllerName = Object.const_get("#{name}Controller")
 					controllerName.dispatch(action, routing_params)
 				else
-					return [status, {'Content-Type'=>'text/html'}, ['pornotime']]
+					response("", "302", {"Location" => target})
 				end
 			else
 				puts "Incorrect status code supplied for redirect"

@@ -9,8 +9,8 @@ module BlocWorks
 			_, controller, action, _ = env["PATH_INFO"].split("/", 4)
 			controller = controller.capitalize
 			controller = "#{controller}Controller"	
-			someVar = Object.const_get(controller)
-			[someVar, action]
+			controllerObj = Object.const_get(controller)
+			[controllerObj, action]
 		end
 
 		def fav_icon(env)
@@ -48,7 +48,7 @@ module BlocWorks
 			@rules.push({ regex: Regexp.new("^/#{regex}$"),
 										vars: vars,
 										destination: destination,
-										options: options })
+										options: options})
 		end
 
 		def map_options(*args)
@@ -92,8 +92,24 @@ module BlocWorks
 			# create CRUD for controller
 			# do we just create an array of new actions and then iterate on them
 			# => calling map on each action
-			# => making sure we are using the correct HTTP verb (where to pass in?)
+			# => making sure we are using the correct HTTP verb
+			actions = create_resourceful_array
+			actions.each do |action|
+				map action.first, action.last
+			end
 
+		end
+
+		def create_resourceful_array
+			actions = []
+			actions << [":controller", default: {"action" => "index", "request_method" => "get"}]
+			actions << [":controller/:id", default: {"action" => "show", "request_method" => "get"}]
+			actions << [":controller/:action", default: {"action" => "new", "request_method" => "get"}]
+			actions << [":controller", default: {"action" => "create", "request_method" => "post"}]
+			actions << [":controller/:id/:action", default: {"action"=>"edit", "request_method" => "get"}]
+			actions << [":controller/:id", default: {"action" => "update", "request_method" => "put"}]
+			actions << [":controller/:id", default: {"action" => "delete", "request_method" => "delete"}]			
+			actions
 		end
 
 		def look_up_url(url)
